@@ -5,12 +5,13 @@ MAINTAINER Lukz <lucaspgois@gmail.com>
 CMD ["/sbin/my_init"]
 
 RUN export DEBIAN_FRONTEND="noninteractie"
+RUN apt-get install -y software-properties-common curl
 	
 # Installing nodejs
-RUN curl --silent --location https://deb.nodesource.com/setup_4.x | bash -
+RUN curl --silent --location https://deb.nodesource.com/setup_5.x | bash -
 RUN apt-get update
 RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y --force-yes nodejs
-RUN npm upgrade npm -g
+RUN curl -L https://npmjs.org/install.sh | sh
 RUN npm set progress=false
 
 # Installing PHP and stuff
@@ -20,7 +21,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y --force-yes php7.0-cli p
 php-pgsql php-sqlite3 php-gd php-apcu \
 php-curl php7.0-mcrypt \
 php-imap php-mysql php-memcached php7.0-readline php-xdebug \
-php-mbstring php-xml php7.0-fpm
+php-mbstring php-xml php7.0-fpm php-mongodb
 
 
 RUN curl -sS https://getcomposer.org/installer | php
