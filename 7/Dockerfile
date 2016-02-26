@@ -17,9 +17,11 @@ RUN npm set progress=false
 RUN LC_ALL=en_US.UTF-8 apt-add-repository ppa:ondrej/php -y
 RUN apt-get update
 RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y --force-yes php7.0-cli php7.0-dev \
-	php-pgsql php-sqlite3 php-gd php-apcu \
-	php-curl php7.0-fpm \
-	php-imap php-mysql php-memcached php7.0-readline php-xdebug php7.0-mbstring php7.0-xml
+php-pgsql php-sqlite3 php-gd php-apcu \
+php-curl php7.0-mcrypt \
+php-imap php-mysql php-memcached php7.0-readline php-xdebug \
+php-mbstring php-xml php7.0-fpm
+
 
 RUN curl -sS https://getcomposer.org/installer | php
 RUN mv composer.phar /usr/local/bin/composer
@@ -39,6 +41,7 @@ RUN sed -i "s/post_max_size = .*/post_max_size = 100M/" /etc/php/7.0/fpm/php.ini
 RUN sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.0/fpm/php.ini
 RUN sed -e 's/;daemonize = yes/daemonize = no/' -i /etc/php/7.0/fpm/php-fpm.conf
 RUN sed -i -e "s/www-data/root/g" /etc/php/7.0/fpm/pool.d/www.conf
+
 
 # Installing NGINX
 RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y --force-yes nginx
