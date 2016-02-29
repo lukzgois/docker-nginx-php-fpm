@@ -5,8 +5,9 @@ MAINTAINER Lukz <lucaspgois@gmail.com>
 CMD ["/sbin/my_init"]
 
 RUN export DEBIAN_FRONTEND="noninteractie"
-RUN apt-get install -y software-properties-common curl
-	
+RUN apt-get update
+RUN apt-get install -y software-properties-common curl git unzip 
+    
 # Installing nodejs
 RUN curl --silent --location https://deb.nodesource.com/setup_5.x | bash -
 RUN apt-get update
@@ -42,6 +43,12 @@ RUN sed -i "s/post_max_size = .*/post_max_size = 100M/" /etc/php/7.0/fpm/php.ini
 RUN sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.0/fpm/php.ini
 RUN sed -e 's/;daemonize = yes/daemonize = no/' -i /etc/php/7.0/fpm/php-fpm.conf
 RUN sed -i -e "s/www-data/root/g" /etc/php/7.0/fpm/pool.d/www.conf
+RUN sed -i -e "s/;clear_env = no/clear_env = no/g" /etc/php/7.0/fpm/pool.d/www.conf
+RUN sed -i -e "s/listen = \/run\/php\/php7.0-fpm.sock/listen = \/var\/run\/php\/php7.0-fpm.sock/g" /etc/php/7.0/fpm/pool.d/www.conf
+
+# We will disable xdebug for composer and create an alias to use it with the php comand
+RUN rm /etc/php/7.0/cli/conf.d/20-xdebug.ini
+RUN echo "alias php=\"php -dzend_extension=xdebug.so\"" >> ~/.bashrc
 
 
 # Installing NGINX
