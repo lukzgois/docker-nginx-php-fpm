@@ -5,11 +5,11 @@ MAINTAINER Lukz <lucaspgois@gmail.com>
 CMD ["/sbin/my_init"]
 
 ADD . /build/
-RUN /build/prepare.sh && \
-    /build/nodejs.sh && \
-    /build/php.sh && \
-    /build/nginx.sh \
-    /build/services.sh
+RUN /build/prepare.sh
+RUN /build/nodejs.sh
+RUN /build/php.sh
+RUN /build/nginx.sh
+RUN /build/services.sh
 
 EXPOSE 80
 
