@@ -1,4 +1,4 @@
-IMAGE_NAME := 'lukz/php-fpm'
+IMAGE_NAME := 'lukz/nginx-php-fpm'
 
 # bins
 DOCKER := $(shell which adocker || which docker)

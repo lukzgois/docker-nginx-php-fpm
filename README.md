@@ -17,8 +17,8 @@ Basic image for PHP and Laravel development.
 
 Example of using this image with [azk][azk]:
 
-```
-	systems({
+```javascript
+systems({
   "app": {
     // Dependent systems
     depends: [], // postgres, mysql, mongodb ...
