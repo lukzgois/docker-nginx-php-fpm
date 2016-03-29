@@ -5,11 +5,12 @@ Basic image for PHP and Laravel development.
 ## Image Contents
 
 - Ubuntu 14.04
-- NodeJS 4.x
-- Npm 3.x
+- NodeJS 5.x
+- Npm
 - PHP 7
 - Composer
 - Nginx
+- Supervisor
 
 ## Usage
 
@@ -56,7 +57,7 @@ systems({
 To run the image and bind to port 80:
 
 ```sh
-$ docker run -it --name my-app -p 80:80 -v "$PWD":/var/www lukz/php-fpm:latest
+$ docker run -d -p 80:80 -v "$PWD":/var/www lukz/php-fpm:latest
 ```
 
 ## License

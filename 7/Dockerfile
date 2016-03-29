@@ -7,7 +7,7 @@ CMD ["/sbin/my_init"]
 # Preparing for the installation
 RUN export DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update && apt-get install -y software-properties-common curl git unzip openssl pkg-config \
-wget vim
+wget vim supervisor
 RUN echo "export TERM=xterm" >> ~/.bashrc
 RUN mkdir /build
 COPY templates /build/templates
@@ -32,19 +32,16 @@ php-mbstring php-xml php7.0-fpm
 RUN curl -sS https://getcomposer.org/installer | php
 RUN mv composer.phar /usr/local/bin/composer
 
-# Setting  some PHP config for development
-RUN sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.0/cli/php.ini
-RUN sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.0/cli/php.ini
-RUN sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.0/cli/php.ini
-RUN sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.0/cli/php.ini
+# Setting some PHP Env variables
+ENV PHP_ERROR_REPORTING     E_ALL
+ENV PHP_DISPLAY_ERRORS      On
+ENV PHP_MEMORY_LIMIT        512M
+ENV PHP_TIMEZONE            UTC
+ENV PHP_UPLOAD_MAX_FILESIZE 100M
+ENV PHP_POST_MAX_SIZE       100M
 
-RUN sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.0/fpm/php.ini
-RUN sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.0/fpm/php.ini
+# Setting some php settings for docker
 RUN sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.0/fpm/php.ini
-RUN sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.0/fpm/php.ini
-RUN sed -i "s/upload_max_filesize = .*/upload_max_filesize = 100M/" /etc/php/7.0/fpm/php.ini
-RUN sed -i "s/post_max_size = .*/post_max_size = 100M/" /etc/php/7.0/fpm/php.ini
-RUN sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.0/fpm/php.ini
 RUN sed -e 's/;daemonize = yes/daemonize = no/' -i /etc/php/7.0/fpm/php-fpm.conf
 RUN sed -i -e "s/www-data/root/g" /etc/php/7.0/fpm/pool.d/www.conf
 RUN sed -i -e "s/;clear_env = no/clear_env = no/g" /etc/php/7.0/fpm/pool.d/www.conf
@@ -71,11 +68,14 @@ RUN cp /build/templates/virtualhost /etc/nginx/sites-available/default
 
 RUN service php7.0-fpm stop
 RUN service nginx stop
+RUN service supervisor stop
 
 # Run PHP and Nginx with runit
 RUN mkdir /etc/service/php7.0-fpm && mkdir /run/php && cp /build/run/php-fpm.sh /etc/service/php7.0-fpm/run \
 && chmod +x /etc/service/php7.0-fpm/run
-RUN mkdir /etc/service/nginx && cp /build/run/nginx.sh /etc/service/nginx/run &&chmod +x /etc/service/nginx/run
+RUN mkdir /etc/service/nginx && cp /build/run/nginx.sh /etc/service/nginx/run && chmod +x /etc/service/nginx/run
+RUN mkdir /etc/service/supervisor && cp /build/run/supervisor.sh /etc/service/supervisor/run \ 
+&& chmod +x /etc/service/supervisor/run
 
 EXPOSE 80
 
