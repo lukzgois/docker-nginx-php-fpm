@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --force-yes nodejs
 RUN curl -L https://npmjs.org/install.sh | sh
 # disabling npm progress bar to speed up installs. See: https://github.com/npm/npm/issues/11283
 RUN npm set progress=false
+RUN npm install gulp -g
 
 # Installing PHP and stuff
 RUN LC_ALL=en_US.UTF-8 apt-add-repository ppa:ondrej/php -y
