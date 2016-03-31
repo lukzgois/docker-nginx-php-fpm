@@ -14,12 +14,11 @@ COPY templates /build/templates
 COPY run /build/run
 
 # Installing nodejs
-RUN curl --silent --location https://deb.nodesource.com/setup_5.x | bash -
-RUN apt-get update && apt-get install -y --force-yes nodejs
-RUN curl -L https://npmjs.org/install.sh | sh
+RUN curl --silent --location https://deb.nodesource.com/setup_5.x | bash - && \
+apt-get update && apt-get install -y --force-yes nodejs && \
+curl -L https://npmjs.org/install.sh | sh
 # disabling npm progress bar to speed up installs. See: https://github.com/npm/npm/issues/11283
-RUN npm set progress=false
-RUN npm install gulp -g
+RUN npm set progress=false && npm install gulp -g
 
 # Installing PHP and stuff
 RUN LC_ALL=en_US.UTF-8 apt-add-repository ppa:ondrej/php -y
@@ -30,8 +29,8 @@ php-imap php-mysql php-memcached php7.0-readline php-xdebug \
 php-mbstring php-xml php7.0-fpm
 
 # Installing composer
-RUN curl -sS https://getcomposer.org/installer | php
-RUN mv composer.phar /usr/local/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php && \
+mv composer.phar /usr/local/bin/composer
 
 # Setting some PHP Env variables
 ENV PHP_ERROR_REPORTING     E_ALL
@@ -42,15 +41,15 @@ ENV PHP_UPLOAD_MAX_FILESIZE 100M
 ENV PHP_POST_MAX_SIZE       100M
 
 # Setting some php settings for docker
-RUN sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.0/fpm/php.ini
-RUN sed -e 's/;daemonize = yes/daemonize = no/' -i /etc/php/7.0/fpm/php-fpm.conf
-RUN sed -i -e "s/www-data/root/g" /etc/php/7.0/fpm/pool.d/www.conf
-RUN sed -i -e "s/;clear_env = no/clear_env = no/g" /etc/php/7.0/fpm/pool.d/www.conf
-RUN sed -i -e "s/listen = \/run\/php\/php7.0-fpm.sock/listen = \/var\/run\/php\/php7.0-fpm.sock/g" /etc/php/7.0/fpm/pool.d/www.conf
+RUN sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.0/fpm/php.ini && \
+sed -e 's/;daemonize = yes/daemonize = no/' -i /etc/php/7.0/fpm/php-fpm.conf && \
+sed -i -e "s/www-data/root/g" /etc/php/7.0/fpm/pool.d/www.conf && \
+sed -i -e "s/;clear_env = no/clear_env = no/g" /etc/php/7.0/fpm/pool.d/www.conf && \
+sed -i -e "s/listen = \/run\/php\/php7.0-fpm.sock/listen = \/var\/run\/php\/php7.0-fpm.sock/g" /etc/php/7.0/fpm/pool.d/www.conf
 
 # We will disable xdebug for composer and create an alias to use it with the php comand
-RUN rm /etc/php/7.0/cli/conf.d/20-xdebug.ini
-RUN echo "alias php=\"php -dzend_extension=xdebug.so\"" >> ~/.bashrc
+RUN rm /etc/php/7.0/cli/conf.d/20-xdebug.ini && \
+echo "alias php=\"php -dzend_extension=xdebug.so\"" >> ~/.bashrc
 
 # We will replace the pecl bin with a version that loads xml.so, because the extension is not compiled in the source
 # on the PPA and the pecl disable all .ini files
@@ -61,15 +60,13 @@ RUN pecl install mongodb && echo "extension=mongodb.so" >> /etc/php/7.0/fpm/conf
 && echo "extension=mongodb.so" >> /etc/php/7.0/cli/conf.d/20-mongodb.ini
 
 # Installing NGINX
-RUN apt-get install -y --force-yes nginx
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-RUN sed -i -e "s/user www-data/user root/g" /etc/nginx/nginx.conf
-RUN rm /etc/nginx/sites-available/default
-RUN cp /build/templates/virtualhost /etc/nginx/sites-available/default
+RUN apt-get install -y --force-yes nginx && \
+echo "daemon off;" >> /etc/nginx/nginx.conf && \
+sed -i -e "s/user www-data/user root/g" /etc/nginx/nginx.conf && \
+rm /etc/nginx/sites-available/default && \
+cp /build/templates/virtualhost /etc/nginx/sites-available/default
 
-RUN service php7.0-fpm stop
-RUN service nginx stop
-RUN service supervisor stop
+RUN service php7.0-fpm stop && service nginx stop && service supervisor stop
 
 # Run PHP and Nginx with runit
 RUN mkdir /etc/service/php7.0-fpm && mkdir /run/php && cp /build/run/php-fpm.sh /etc/service/php7.0-fpm/run \
