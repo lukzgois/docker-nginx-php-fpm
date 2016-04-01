@@ -55,9 +55,12 @@ echo "alias php=\"php -dzend_extension=xdebug.so\"" >> ~/.bashrc
 # on the PPA and the pecl disable all .ini files
 RUN rm /usr/bin/pecl && cp /build/templates/pecl /usr/bin/pecl && chmod +x /usr/bin/pecl
 
-# Installing the lastest mongodb extension
+# Installing the mongodb and zip extension
 RUN pecl install mongodb && echo "extension=mongodb.so" >> /etc/php/7.0/fpm/conf.d/20-mongodb.ini \
 && echo "extension=mongodb.so" >> /etc/php/7.0/cli/conf.d/20-mongodb.ini
+
+RUN pecl install zip && echo "extension=zip.so" >> /etc/php/7.0/fpm/conf.d/20-zip.ini \
+&& echo "extension=zip.so" >> /etc/php/7.0/cli/conf.d/20-zip.ini
 
 # Installing NGINX
 RUN apt-get install -y --force-yes nginx && \
