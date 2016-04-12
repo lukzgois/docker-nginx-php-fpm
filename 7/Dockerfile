@@ -56,10 +56,10 @@ echo "alias php=\"php -dzend_extension=xdebug.so\"" >> ~/.bashrc
 RUN rm /usr/bin/pecl && cp /build/templates/pecl /usr/bin/pecl && chmod +x /usr/bin/pecl
 
 # Installing the mongodb and zip extension
-RUN pecl install mongodb && echo "extension=mongodb.so" >> /etc/php/7.0/fpm/conf.d/20-mongodb.ini \
-&& echo "extension=mongodb.so" >> /etc/php/7.0/cli/conf.d/20-mongodb.ini
-
-RUN pecl install zip && echo "extension=zip.so" >> /etc/php/7.0/fpm/conf.d/20-zip.ini \
+RUN pecl install mongodb zip \
+&& echo "extension=mongodb.so" >> /etc/php/7.0/fpm/conf.d/20-mongodb.ini \
+&& echo "extension=mongodb.so" >> /etc/php/7.0/cli/conf.d/20-mongodb.ini \
+&& echo "extension=zip.so" >> /etc/php/7.0/fpm/conf.d/20-zip.ini \
 && echo "extension=zip.so" >> /etc/php/7.0/cli/conf.d/20-zip.ini
 
 # Installing NGINX
